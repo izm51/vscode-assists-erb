@@ -10,14 +10,19 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:assistserb.helloWorld"
+		"onCommand:assistserb.normalTag",
+		"onCommand:assistserb.replaceTag"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "assistserb.helloWorld",
-				"title": "Hello World"
+				"command": "assistserb.normalTag",
+				"title": "ERB: Wrap with <% ~ %>"
+			},
+			{
+				"command": "assistserb.replaceTag",
+				"title": "ERB: Wrap with <%= ~ %>"
 			}
 		]
 	},

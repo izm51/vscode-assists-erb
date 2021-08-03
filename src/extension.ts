@@ -5,22 +5,39 @@ import * as vscode from 'vscode';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "assistserb" is now active!');
+	let normalTag = vscode.commands.registerCommand('assistserb.normalTag', () => {
+		addTag("<% ", " %>")
+	})
+	let replaceTag = vscode.commands.registerCommand('assistserb.replaceTag', () => {
+		addTag("<%= ", " %>")
+	})
+	context.subscriptions.push(normalTag);
+	context.subscriptions.push(replaceTag);
+}
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('assistserb.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from AssistsERB!');
-	});
+function addTag(startTag: string, endTag: string) {
+	const editor = vscode.window.activeTextEditor;
+	if (editor) {
+		const document = editor.document;
+		const selection = editor.selection;
 
-	context.subscriptions.push(disposable);
+		wrapSelectedTextByTag(editor, selection, startTag, endTag);
+		editor.selection = goBackSelection(selection, startTag.length);
+	}
+}
+
+function wrapSelectedTextByTag(editor: vscode.TextEditor, selection: vscode.Selection, startTag: string, endTag: string) {
+	editor.edit(editBuilder => {
+		editBuilder.insert(selection.start, startTag);
+		editBuilder.insert(selection.end, endTag);
+	})
+}
+
+function goBackSelection(selection: vscode.Selection, range: number): vscode.Selection {
+	const anchorPosition = new vscode.Position(selection.anchor.line, selection.anchor.character + range)
+	const activePosition = new vscode.Position(selection.active.line, selection.active.character + range)
+	return new vscode.Selection(anchorPosition, activePosition)
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
